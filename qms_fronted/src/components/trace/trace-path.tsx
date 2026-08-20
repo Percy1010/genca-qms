@@ -2,7 +2,6 @@
 
 import { ChevronRight, Route } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 export interface TracePathStep {
@@ -13,14 +12,10 @@ export interface TracePathStep {
 export interface TracePathProps {
   /** 路径步骤（按追溯方向排列） */
   steps: TracePathStep[]
-  /** 追溯方向：down=正向下钻 / up=逆向(上钻) */
+  /** 追溯方向：down=正向下钻 / up=逆向 */
   direction: "down" | "up"
-  /** 自定义路径标题（默认按 direction 自动取"追溯路径/上钻路径"） */
+  /** 自定义路径标题（默认「追溯路径」） */
   label?: string
-  /** 当前层（最后一步）是否为追溯终点 */
-  isLeafEnd?: boolean
-  /** 终点徽标文案（如"终点"/"采购来源"） */
-  endBadge?: string
   /** 点击历史步骤的回调（通常为回到该步骤的批次视图：出入库/产出物） */
   onJumpTo: (index: number) => void
   /** 点击历史步骤的物料编码回调（回到该物料基本信息 + 批次列表）；缺失时退回 onJumpTo */
@@ -38,15 +33,13 @@ export function TracePath({
   steps,
   direction,
   label,
-  isLeafEnd,
-  endBadge,
   onJumpTo,
   onJumpCode,
   onCurrentCodeClick,
   className,
 }: TracePathProps) {
   const Icon = Route
-  const defaultLabel = direction === "down" ? "追溯路径" : "上钻路径"
+  const defaultLabel = "追溯路径"
 
   return (
     <div
@@ -89,17 +82,12 @@ export function TracePath({
                       title="回到该节点对应结果"
                       className="font-mono text-xs text-primary transition-colors hover:underline"
                     >
-                      {step.code}{step.batchNo ? `(${step.batchNo})` : ""}
+                      {step.code}
                     </button>
                   ) : (
                     <span className="font-mono text-xs">
-                      {step.code}{step.batchNo ? `(${step.batchNo})` : ""}
+                      {step.code}
                     </span>
-                  )}
-                  {isLeafEnd && endBadge && (
-                    <Badge variant="secondary" className="ml-0.5">
-                      {endBadge}
-                    </Badge>
                   )}
                 </span>
               ) : (
@@ -110,7 +98,6 @@ export function TracePath({
                   className="group flex items-center rounded-none px-1 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:bg-background hover:text-primary hover:underline"
                 >
                   {step.code}
-                  {step.batchNo ? `(${step.batchNo})` : ""}
                 </button>
               )}
             </li>

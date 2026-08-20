@@ -303,14 +303,12 @@ export interface SalesReturnRecord extends TraceRow {
   registrationNo: string
   batchNo: string
   expiryDate: string
-  stockInNo: string
+  stockOutNo: string
   qty: number
   unit: string
   date: string
   warehouse: string
-  originalOrderNo: string
-  price: number
-  buyerInfo: string
+  remark: string
 }
 
 /** 节点四 · 大仓出库 */
@@ -839,14 +837,12 @@ function mapSalesReturns(
       registrationNo: dash(sku.registrationNo),
       batchNo: first?.batchNo ?? "-",
       expiryDate: first?.expiryDate ?? "-",
-      stockInNo: `SR${returnDate.replace(/-/g, "")}${String(i + 1).padStart(3, "0")}`,
+      stockOutNo: `SR${returnDate.replace(/-/g, "")}${String(i + 1).padStart(3, "0")}`,
       qty: r.qty,
       unit: r.unit,
       date: returnDate,
       warehouse: first?.warehouse ?? "品牌大仓",
-      originalOrderNo: r.orderNo,
-      price: r.price,
-      buyerInfo: `${r.channel} / ${r.shopName} / ${r.customer}`,
+      remark: `销售退货 / ${r.orderNo}`,
     }
   })
 }

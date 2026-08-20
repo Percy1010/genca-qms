@@ -1620,130 +1620,6 @@ export function queryBatchFlow(code: string, batchNo: string): BatchFlow | null 
  }
 }
 
-/** 该批次是否已到终点（无产出物、无销售） */
-export function isLeaf(flow: BatchFlow): boolean {
-  return flow.outputs.length === 0 && flow.sales.length === 0
-}
-
-/* ==================== 正向追溯报告数据 ====================
-   正向报告的每一节内容严格取自「正向追溯」页面实际展示的数据：
-   产品基本信息 + 追溯链路 + 各节点的入库/出库/生产产出物/销售去向。
-   不包含逆向才有的上游原料供应链/检验记录/供应商资质。 */
-
-/** 正向链路中的一个节点（一个物料批次）及其单据明细 */
-export interface ForwardNodeReport {
-  code: string
-  name: string
-  category: Category
-  batchNo: string
-  qty: string
-  status: string
-  productionDate: string
-  provider: string
-  /** 该业务类型在「下钻」方向上：入库记录 */
-  stockIn: StockInRecord[]
-  /** 出库记录 */
-  stockOut: StockOutRecord[]
-  /** 生产出的半成品 / 成品（继续下钻去向） */
-  outputs: DownstreamProduct[]
-  /** 销售去向记录 */
-  sales: SalesRecord[]
-}
-
-export interface ForwardTraceReportData {
-  direction: "forward"
-  reportNo: string
-  generatedAt: string
-  generatedBy: string
-  productName: string
-  productSpec: string
-  productCode: string
-  productCategory: Category
-  batchNo: string
-  batchQty: string
-  productionDate: string
-  warehouse: string
-  /** 自起点向下收集到的完整正向追溯链（顺序即下钻顺序） */
-  chain: ForwardNodeReport[]
-  /** 全链销售去向条数汇总 */
-  totalSales: number
-  /** 全链产出物条数汇总 */
-  totalOutput: number
-}
-
-/** 从起点批次向下收集整条正向追溯链（BFS，去重） */
-function collectForwardChain(flow: BatchFlow): ForwardNodeReport[] {
-  const seen = new Set<string>()
-  const chain: ForwardNodeReport[] = []
-  const queue: BatchFlow[] = [flow]
-  while (queue.length) {
-    const f = queue.shift()!
-    const key = `${f.sku.code}|${f.batch.batchNo}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    chain.push({
-      code: f.sku.code,
-      name: f.sku.name,
-      category: f.sku.category,
-      batchNo: f.batch.batchNo,
-      qty: f.batch.currentQty != null ? `${f.batch.currentQty.toLocaleString()} ${f.batch.unit}`.trim() : "-",
-      status: f.batch.status ?? "正常",
-      productionDate: f.batch.productionDate,
-      provider: f.sku.defaultProvider,
-      stockIn: f.inRecords,
-      stockOut: f.outRecords,
-      outputs: f.outputs,
-      sales: f.sales,
-   })
-    for (const o of f.outputs) {
-      const child = queryBatchFlow(o.code, o.batchNo)
-      if (child) queue.push(child)
-   }
- }
-  return chain
-}
-
-/** 根据当前批次生成「正向追溯报告」：内容与正向追溯页面完全对应 */
-export function buildForwardTraceReport(
-  code: string,
-  batchNo: string,
-): ForwardTraceReportData | null {
-  const start = queryBatchFlow(code, batchNo)
-  if (!start) return null
-
-  const reportNoMap: Record<string, string> = {
-    "DD24F0011A|B5A1021/20280109": "TR-2025-00009",
-    "DD25F0261A|J6F0521/20290604": "TR-2026-00006",
-    "DD25F0011A|J5F1211/20280611": "TR-2026-00011",
- }
-  const reportNo =
-    reportNoMap[
-      `${code.trim().toUpperCase()}|${batchNo.trim().toUpperCase()}`
-    ] ?? "TR-2026-00015"
-
-  const chain = collectForwardChain(start)
-  const totalSales = chain.reduce((s, n) => s + n.sales.length, 0)
-  const totalOutput = chain.reduce((s, n) => s + n.outputs.length, 0)
-
-  return {
-    direction: "forward",
-    reportNo,
-    generatedAt: new Date().toLocaleString("zh-CN", { hour12: false}),
-    generatedBy: "质量部 · 系统生成",
-    productName: start.sku.name,
-    productSpec: start.sku.spec,
-    productCode: start.sku.code,
-    productCategory: start.sku.category,
-    batchNo: start.batch.batchNo,
-    batchQty: start.batch.currentQty != null ? `${start.batch.currentQty.toLocaleString()} ${start.batch.unit}`.trim() : "-",
-    productionDate: start.batch.productionDate,
-    warehouse: start.batch.warehouse,
-    chain,
-    totalSales,
-    totalOutput,
- }
-}
-
 /* ==================== 正向追溯 · 按模块聚合查询 ====================
    查询一个物料（可多选批次过滤）后，按六大模块返回：
    物料信息 / 送货记录 / 入库记录 / 出库记录 / 领用记录 / 生产去向。 */
@@ -1960,7 +1836,7 @@ export function queryForwardTrace(
    })
  }
 
-  /* 演示展示取前 12 条销售记录（真实订单数据量大，页面每节点控制在 10 条左右；完整销售清单见正向追溯报告） */
+  /* 演示展示取前 12 条销售记录（真实订单数据量大，页面每节点控制在 10 条左右） */
   const cappedSales = sales.slice(0, 12)
 
   return {

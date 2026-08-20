@@ -8,7 +8,6 @@ import { Toaster } from "@/components/ui/sonner"
 import { AppSidebar } from "@/components/app-sidebar"
 import { AppHeader } from "@/components/app-header"
 import { TabProvider, useTabs } from "@/lib/tab-store"
-import { ReportProvider } from "@/lib/report-store"
 import { TraceSessionProvider } from "@/lib/trace-session-store"
 import { LayoutProvider } from "@/context/layout-provider"
 import { SearchProvider } from "@/context/search-provider"
@@ -44,8 +43,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <>
       <LayoutProvider>
         <TabProvider>
-          <ReportProvider>
-            <TraceSessionProvider>
+          <TraceSessionProvider>
             <SearchProvider>
               <TooltipProvider>
                 <SidebarProvider defaultOpen={defaultOpen}>
@@ -58,8 +56,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                 </SidebarProvider>
               </TooltipProvider>
             </SearchProvider>
-            </TraceSessionProvider>
-          </ReportProvider>
+          </TraceSessionProvider>
         </TabProvider>
       </LayoutProvider>
       <Toaster richColors position="top-right" />

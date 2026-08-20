@@ -265,7 +265,6 @@ export default function ForwardTracePage() {
   const current = path[path.length - 1]
   const atOrigin = path.length <= 1
   const queryCode = atOrigin ? originCode : (current?.code ?? originCode)
-  const queryBatches = atOrigin ? selectedBatches : (current?.batchNo ? [current.batchNo] : [])
 
   const sectionKeys = useMemo(
     () => (result ? collectForwardSectionKeys(result) : []),
@@ -435,7 +434,7 @@ export default function ForwardTracePage() {
                 placeholder="批次编号"
                 searchPlaceholder="请输入"
                 options={batchOptions}
-                value={atOrigin ? selectedBatches : queryBatches}
+                value={atOrigin ? selectedBatches : []}
                 onChange={handleBatchChange}
                 disabled={!atOrigin}
                 emptyText="该物料暂无批次"
@@ -481,8 +480,6 @@ export default function ForwardTracePage() {
             <TracePath
               direction="down"
               steps={path}
-              isLeafEnd={result.kind === "finished"}
-              endBadge="终点"
               onJumpTo={jumpTo}
               onJumpCode={jumpTo}
             />

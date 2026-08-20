@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { GripVertical, PanelLeft, PanelRight, Settings2 } from "lucide-react"
+import { ArrowLeftToLine, ArrowRightToLine, GripVertical, Settings2 } from "lucide-react"
 import type { Column, Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -220,7 +220,7 @@ export function DataTableViewOptions<TData>({
                     pinned === "left" && "bg-primary/10 text-primary",
                   )}
                 >
-                  <PanelLeft className="size-3.5" />
+                  <ArrowLeftToLine className="size-3.5" />
                 </button>
                 <button
                   type="button"
@@ -237,7 +237,7 @@ export function DataTableViewOptions<TData>({
                     pinned === "right" && "bg-primary/10 text-primary",
                   )}
                 >
-                  <PanelRight className="size-3.5" />
+                  <ArrowRightToLine className="size-3.5" />
                 </button>
               </div>
             )

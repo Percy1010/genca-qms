@@ -1,15 +1,9 @@
 import type { LucideIcon } from "lucide-react"
-import {
-  BadgeCheck,
-  Building2,
-  Wrench,
-  Award,
-  PackageSearch,
-} from "lucide-react"
+import { PackageSearch } from "lucide-react"
 
 /**
  * 三级导航结构：
- * - 一级 = 分组标签（供应商 / 追溯）
+ * - 一级 = 分组标签（追溯）
  * - 二级 = 模块（含图标，可展开或无子级）
  * - 三级 = 页面（可点击的具体入口，仅部分二级下存在）
  */
@@ -28,15 +22,6 @@ export type NavSection = {
 /** 业务功能分组（一级 → 二级 → 三级） */
 export const navSections: NavSection[] = [
   {
-    label: "合作伙伴",
-    items: [
-      { title: "供应商准入", url: "/supplier/admission", icon: BadgeCheck },
-      { title: "供应商档案", url: "/supplier/profile", icon: Building2 },
-      { title: "供应商整改", url: "/supplier/rectification", icon: Wrench },
-      { title: "供应商绩效", url: "/supplier/performance", icon: Award },
-    ],
-  },
-  {
     label: "追溯",
     items: [
       {
@@ -46,7 +31,6 @@ export const navSections: NavSection[] = [
         items: [
           { title: "正向追溯", url: "/trace/forward" },
           { title: "逆向追溯", url: "/trace/backward" },
-          { title: "追溯报告", url: "/trace/report" },
         ],
       },
     ],

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import {
   Boxes,
   ChevronDown,
+  ChevronRight,
   ClipboardList,
   FileCheck2,
   Layers,
@@ -91,12 +92,11 @@ export function SectionCard({
         >
           {icon}
           <span>{title}</span>
-          <ChevronDown
-            className={cn(
-              "size-4 shrink-0 text-muted-foreground transition-transform",
-              open ? "rotate-180" : "",
-            )}
-          />
+          {open ? (
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+          )}
           {badge && (
             <span className="ml-auto text-xs font-normal text-muted-foreground">
               {badge}

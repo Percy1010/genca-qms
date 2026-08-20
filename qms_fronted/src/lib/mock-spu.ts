@@ -19,6 +19,12 @@ export interface SpuSku {
   spec: string
   /** 货品名称 */
   name: string
+  /** 品牌 */
+  brand: string
+  /** 注册备案名称 */
+  registrationName: string
+  /** 注册备案编号 */
+  registrationNo: string
   /** 是否正装成品（可用于逆向追溯起点 SKU） */
   isFinished: boolean
 }
@@ -56,97 +62,145 @@ const SPU_LIZHI: SpuMaster = {
     {
       code: "DD25F0011A",
       spec: "110ml",
-      name: "ddg 净润卸妆膏（荔枝香）110ml 荔枝卸妆膏",
+      name: "ddg 净润卸妆膏（荔枝香）110ml 荔枝卸妆膏3.0",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）110ml",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: true,
     },
     {
       code: "DD25F0011B",
       spec: "110ml 替换装",
       name: "ddg 净润卸妆膏（荔枝香）110ml 替换装 荔枝卸妆膏【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）110ml 替换装",
+      registrationNo: "-",
       isFinished: false,
     },
     {
       code: "DD25F0011C",
       spec: "50ml",
       name: "ddg 净润卸妆膏（荔枝香）50ml 荔枝卸妆膏【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）50ml",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011D",
       spec: "3ml",
       name: "ddg 净润卸妆膏（荔枝香）3ml 无包装裸支 荔枝卸妆膏3.0",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml",
+      registrationNo: "-",
       isFinished: false,
     },
     {
       code: "DD25F0011E",
       spec: "3ml*5",
       name: "ddg 净润卸妆膏（荔枝香）3ml*5 荔枝卸妆膏【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml*5",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011F",
       spec: "3ml",
-      name: "ddg 净润卸妆膏（荔枝香）3ml 荔枝卸妆膏【001】",
+      name: "ddg 净润卸妆膏（荔枝香） 3ml 荔枝卸妆膏【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011G",
       spec: "3ml*3",
-      name: "ddg 净润卸妆膏（荔枝香）3ml*3 荔枝卸妆膏【001】",
+      name: "ddg 净润卸妆膏（荔枝香） 3ml*3 荔枝卸妆膏【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml*3",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011H",
       spec: "3ml*6",
       name: "ddg 净润卸妆膏（荔枝香）3ml*6 pet盒装 荔枝卸妆膏3.0【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml*6",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011J",
       spec: "3ml*6",
       name: "ddg 净润卸妆膏组合装（凤梨香+荔枝香）3ml*6 pet盒装【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏组合装（凤梨香+荔枝香）3ml*6",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011K",
       spec: "110ml*6pcs装",
       name: "ddg 净润卸妆膏（荔枝香）110ml 线下专供6pcs装【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）110ml*6pcs装",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: true,
     },
     {
       code: "DD25F0011L",
       spec: "3ml*6",
       name: "ddg 净润卸妆膏（荔枝香）3ml*6 PET盒装线下专供6pcs装",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml*6",
+      registrationNo: "-",
       isFinished: true,
     },
     {
       code: "DD25F0011P",
       spec: "110ml裸瓶半成品",
       name: "ddg 净润卸妆膏（荔枝香）110ml 裸瓶半成品 荔枝卸妆膏3.0",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）110ml裸瓶半成品",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: false,
     },
     {
       code: "DD25F0011Q",
       spec: "3ml*6*6pcs装",
       name: "ddg 净润卸妆膏（荔枝香）3ml*6 PET盒装线下专供6pcs装 荔枝卸妆膏3.0",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）3ml*6*6pcs装",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: true,
     },
     {
       code: "DD25F0011R",
       spec: "100ml正装+100ml替换装",
       name: "ddg 净润卸妆膏（荔枝香）100ml正装+100ml替换装 荔枝卸妆膏3.0【001】",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）100ml正装+100ml替换装",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: true,
     },
     {
       code: "DD25F0011S",
       spec: "100ml",
       name: "ddg 净润卸妆膏（荔枝香）100ml正装 裸瓶半成品  荔枝卸妆膏3.0",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）100ml",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: false,
     },
     {
       code: "DD25F0011T",
       spec: "100ml",
       name: "ddg 净润卸妆膏（荔枝香）100ml替换装 裸瓶半成品 荔枝卸妆膏3.0",
+      brand: "ddg",
+      registrationName: "ddg净润卸妆膏（荔枝香）100ml",
+      registrationNo: "沪G妆网备字2025004778",
       isFinished: false,
     },
   ],
@@ -174,6 +228,16 @@ export async function searchSpusRemote(query: string): Promise<SpuMaster[]> {
 export function getSpuSkus(spuNo: string): SpuSku[] {
   const spu = findSpu(spuNo)
   return spu ? spu.skus : []
+}
+
+/** 按产品编码查找关联 SKU（跨 SPU） */
+export function findSpuSku(code: string): SpuSku | undefined {
+  const key = code.trim().toUpperCase()
+  for (const spu of spuMasters) {
+    const hit = spu.skus.find((s) => s.code.toUpperCase() === key)
+    if (hit) return hit
+  }
+  return undefined
 }
 
 /** 按当前编码或代际编码查找 SPU */

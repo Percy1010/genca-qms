@@ -14,7 +14,10 @@ import type {
   ForwardNode,
   ForwardPathStep,
 } from "@/lib/forward-trace-model"
-import type { ReverseNode } from "@/lib/mock-backward-trace"
+import type {
+  ReverseMaterialNode,
+  ReverseProductNode,
+} from "@/lib/reverse-trace-model"
 
 /* ==================== 正向追溯会话状态 ==================== */
 
@@ -47,9 +50,9 @@ export const emptyForwardTraceSession: ForwardTraceSession = {
 
 export interface BackwardPathStep {
   code: string
-  batchNo: string
-  name: string
-  category: string
+  batchNo?: string
+  name?: string
+  category?: string
 }
 
 export interface BackwardTraceSession {
@@ -61,7 +64,8 @@ export interface BackwardTraceSession {
   batchKeyword: string
   selectedBatch: string | null
   path: BackwardPathStep[]
-  node: ReverseNode | null
+  productNode: ReverseProductNode | null
+  materialNode: ReverseMaterialNode | null
   searched: boolean
   error: string | null
 }
@@ -75,7 +79,8 @@ export const emptyBackwardTraceSession: BackwardTraceSession = {
   batchKeyword: "",
   selectedBatch: null,
   path: [],
-  node: null,
+  productNode: null,
+  materialNode: null,
   searched: false,
   error: null,
 }

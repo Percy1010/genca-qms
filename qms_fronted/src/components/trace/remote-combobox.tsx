@@ -67,7 +67,14 @@ export function RemoteCombobox({
           {selected ? (
             <span className="flex min-w-0 items-center gap-2">
               <span className="shrink-0 font-mono text-xs">{selected.value}</span>
-              <span className="truncate">{selected.label}</span>
+              {selected.label ? (
+                <span className="truncate">{selected.label}</span>
+              ) : null}
+              {selected.hint ? (
+                <Badge variant="outline" className="ml-auto shrink-0">
+                  {selected.hint}
+                </Badge>
+              ) : null}
             </span>
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>

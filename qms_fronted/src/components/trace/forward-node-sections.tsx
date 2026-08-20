@@ -194,10 +194,12 @@ export function RawDeliverySection({
   records,
   open,
   onToggle,
+  storageKey = "forward.raw.delivery",
 }: {
   records: RawDeliveryRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -208,7 +210,7 @@ export function RawDeliverySection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.raw.delivery"
+        storageKey={storageKey}
         columns={rawDeliveryColumns}
         data={records}
         searchPlaceholder="送货单号"
@@ -248,10 +250,12 @@ export function RawFactoryInSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.raw.factory-in",
 }: {
   records: RawFactoryInRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -262,7 +266,7 @@ export function RawFactoryInSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.raw.factory-in"
+        storageKey={storageKey}
         columns={rawInColumns}
         data={records}
         searchPlaceholder="入库单号"
@@ -308,10 +312,12 @@ export function RawFactoryOutSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.raw.factory-out",
 }: {
   records: RawFactoryOutRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -322,7 +328,7 @@ export function RawFactoryOutSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.raw.factory-out"
+        storageKey={storageKey}
         columns={rawOutColumns}
         data={records}
         searchPlaceholder="出库单号"
@@ -365,10 +371,12 @@ export function RawIssueSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.raw.issue",
 }: {
   records: RawIssueRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -379,7 +387,7 @@ export function RawIssueSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.raw.issue"
+        storageKey={storageKey}
         columns={rawIssueColumns}
         data={records}
         searchPlaceholder="生产领料单号"
@@ -418,10 +426,12 @@ export function RetainSampleSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.retain-sample",
 }: {
   records: RetainSampleRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -432,7 +442,7 @@ export function RetainSampleSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.retain-sample"
+        storageKey={storageKey}
         columns={retainColumns}
         data={records}
         searchPlaceholder="入库单号"
@@ -447,6 +457,7 @@ const outputHelper = createColumnHelper<ProductionOutputRecord>()
 
 function buildOutputColumns(
   onNext?: (row: ProductionOutputRecord) => void,
+  hideQty = false,
 ) {
   const columns = [
     col(outputHelper, "materialCode", "物料编码", "mono"),
@@ -455,7 +466,7 @@ function buildOutputColumns(
     col(outputHelper, "brand", "品牌"),
     col(outputHelper, "batchNo", "批次编号", "mono"),
     col(outputHelper, "expiryDate", "有效期至"),
-    col(outputHelper, "qty", "生产数量", "qty"),
+    ...(hideQty ? [] : [col(outputHelper, "qty", "生产数量", "qty")]),
     col(outputHelper, "unit", "单位"),
   ]
   if (!onNext) return toColumns<ProductionOutputRecord>(columns)
@@ -474,7 +485,7 @@ function buildOutputColumns(
             onClick={() => onNext(row.original)}
             className="font-medium text-primary whitespace-nowrap transition-colors hover:underline"
           >
-            下一步
+            查看
           </button>
         </div>
       ),
@@ -487,23 +498,30 @@ export function ProductionOutputSection({
   open,
   onToggle,
   onNext,
+  title = "物料生产去向",
+  storageKey = "forward.production-output",
+  hideQty = false,
 }: {
   records: ProductionOutputRecord[]
   open?: boolean
   onToggle?: () => void
   onNext?: (row: ProductionOutputRecord) => void
+  title?: string
+  storageKey?: string
+  hideQty?: boolean
 }) {
+  const columns = buildOutputColumns(onNext, hideQty)
   return (
     <ModuleCard
       icon={<Layers className="size-4 text-muted-foreground" />}
-      title="物料生产去向"
+      title={title}
       count={records.length}
       open={open}
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.production-output"
-        columns={buildOutputColumns(onNext)}
+        storageKey={storageKey}
+        columns={columns}
         data={records}
         searchPlaceholder="物料编码"
         searchKey="materialCode"
@@ -724,10 +742,12 @@ export function SemiArticleFactoryInSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.semi-article.factory-in",
 }: {
   records: SemiArticleFactoryInRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -738,7 +758,7 @@ export function SemiArticleFactoryInSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.semi-article.factory-in"
+        storageKey={storageKey}
         columns={semiArtInColumns}
         data={records}
         searchPlaceholder="入库单号"
@@ -786,10 +806,12 @@ export function SemiArticleFactoryOutSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.semi-article.factory-out",
 }: {
   records: SemiArticleFactoryOutRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -800,7 +822,7 @@ export function SemiArticleFactoryOutSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.semi-article.factory-out"
+        storageKey={storageKey}
         columns={semiArtOutColumns}
         data={records}
         searchPlaceholder="出库单号"
@@ -845,10 +867,12 @@ export function SemiArticleIssueSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.semi-article.issue",
 }: {
   records: SemiArticleIssueRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -859,7 +883,7 @@ export function SemiArticleIssueSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.semi-article.issue"
+        storageKey={storageKey}
         columns={semiArtIssueColumns}
         data={records}
         searchPlaceholder="生产领料单号"
@@ -906,10 +930,12 @@ export function FinishedFactoryInSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.finished.factory-in",
 }: {
   records: FinishedFactoryInRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -920,7 +946,7 @@ export function FinishedFactoryInSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.finished.factory-in"
+        storageKey={storageKey}
         columns={finInColumns}
         data={records}
         searchPlaceholder="入库单号"
@@ -970,10 +996,12 @@ export function FinishedFactoryOutSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.finished.factory-out",
 }: {
   records: FinishedFactoryOutRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -984,7 +1012,7 @@ export function FinishedFactoryOutSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.finished.factory-out"
+        storageKey={storageKey}
         columns={finOutColumns}
         data={records}
         searchPlaceholder="出库单号"
@@ -1030,10 +1058,12 @@ export function DcStockInSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.dc.stock-in",
 }: {
   records: DcStockInRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -1044,7 +1074,7 @@ export function DcStockInSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.dc.stock-in"
+        storageKey={storageKey}
         columns={dcInColumns}
         data={records}
         searchPlaceholder="入库单号"
@@ -1079,10 +1109,12 @@ export function SalesStockOutSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.sales.stock-out",
 }: {
   records: SalesStockOutRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -1093,7 +1125,7 @@ export function SalesStockOutSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.sales.stock-out"
+        storageKey={storageKey}
         columns={salesOutColumns}
         data={records}
         searchPlaceholder="出库单号"
@@ -1114,14 +1146,12 @@ const salesReturnColumns = toColumns<SalesReturnRecord>([
   col(salesReturnHelper, "registrationNo", "注册备案编号", "mono"),
   col(salesReturnHelper, "batchNo", "批次编号", "mono"),
   col(salesReturnHelper, "expiryDate", "有效期至"),
-  col(salesReturnHelper, "stockInNo", "入库单号", "mono"),
-  col(salesReturnHelper, "qty", "入库数量", "qty"),
+  col(salesReturnHelper, "stockOutNo", "出库单号", "mono"),
+  col(salesReturnHelper, "qty", "出库数量", "qty"),
   col(salesReturnHelper, "unit", "单位"),
-  col(salesReturnHelper, "date", "入库日期"),
-  col(salesReturnHelper, "warehouse", "入库仓库", "clip"),
-  col(salesReturnHelper, "originalOrderNo", "原始单号", "mono"),
-  col(salesReturnHelper, "price", "单价", "money"),
-  col(salesReturnHelper, "buyerInfo", "购买用户信息", "clip"),
+  col(salesReturnHelper, "date", "出库日期"),
+  col(salesReturnHelper, "warehouse", "出库仓库", "clip"),
+  col(salesReturnHelper, "remark", "出库备注", "clip"),
 ])
 
 export function SalesReturnSection({
@@ -1135,7 +1165,7 @@ export function SalesReturnSection({
 }) {
   return (
     <ModuleCard
-      icon={<FileCheck2 className="size-4 text-muted-foreground" />}
+      icon={<PackageMinus className="size-4 text-muted-foreground" />}
       title="销售退货记录"
       count={records.length}
       open={open}
@@ -1145,9 +1175,9 @@ export function SalesReturnSection({
         storageKey="forward.sales.return"
         columns={salesReturnColumns}
         data={records}
-        searchPlaceholder="入库单号"
-        searchKey="stockInNo"
-        minWidth="min-w-[1880px]"
+        searchPlaceholder="出库单号"
+        searchKey="stockOutNo"
+        minWidth="min-w-[1760px]"
       />
     </ModuleCard>
   )
@@ -1175,10 +1205,12 @@ export function DcStockOutSection({
   records,
   open,
   onToggle,
+  storageKey = "forward.dc.stock-out",
 }: {
   records: DcStockOutRecord[]
   open?: boolean
   onToggle?: () => void
+  storageKey?: string
 }) {
   return (
     <ModuleCard
@@ -1189,7 +1221,7 @@ export function DcStockOutSection({
       onToggle={onToggle}
     >
       <RecordTable
-        storageKey="forward.dc.stock-out"
+        storageKey={storageKey}
         columns={dcOutColumns}
         data={records}
         searchPlaceholder="出库单号"

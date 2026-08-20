@@ -47,6 +47,12 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string
   /** 指定按某一列过滤（替代全局搜索） */
   searchKey?: string
+  /** 第一个查询框同时匹配的列（如产品编码+产品名称） */
+  searchKeys?: string[]
+  /** 第二个查询框对应列 */
+  extraSearchKey?: string
+  /** 第二个查询框占位文案 */
+  extraSearchPlaceholder?: string
   /** 隐藏内置搜索框（用于外部自定义搜索） */
   hideSearch?: boolean
   /** 列级多面筛选 */
@@ -82,6 +88,9 @@ export function DataTable<TData, TValue>({
   data,
   searchPlaceholder = "筛选...",
   searchKey,
+  searchKeys,
+  extraSearchKey,
+  extraSearchPlaceholder,
   hideSearch = false,
   filters = [],
   enableRowSelection = false,
@@ -262,6 +271,20 @@ export function DataTable<TData, TValue>({
     return () => cancelAnimationFrame(frame)
   }, [hasPinned, columnVisibility, columnOrder, columnPinning, snapshotColumnWidths])
 
+  const globalFilterFn = React.useCallback(
+    (row: { original: TData }, _columnId: string, filterValue: unknown) => {
+      const keys = searchKeys?.length ? searchKeys : undefined
+      if (!keys) return true
+      const q = String(filterValue ?? "").trim().toLowerCase()
+      if (!q) return true
+      const record = row.original as Record<string, unknown>
+      return keys.some((key) =>
+        String(record[key] ?? "").toLowerCase().includes(q),
+      )
+    },
+    [searchKeys],
+  )
+
   const table = useReactTable({
     data,
     columns,
@@ -277,6 +300,7 @@ export function DataTable<TData, TValue>({
     },
     enableRowSelection,
     enableSorting: sortable,
+    globalFilterFn: searchKeys?.length ? globalFilterFn : undefined,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -366,7 +390,9 @@ export function DataTable<TData, TValue>({
           <DataTableToolbar
             table={table}
             searchPlaceholder={searchPlaceholder}
-            searchKey={searchKey}
+            searchKey={searchKeys?.length ? undefined : searchKey}
+            extraSearchKey={extraSearchKey}
+            extraSearchPlaceholder={extraSearchPlaceholder}
             hideSearch={hideSearch}
             filters={filters}
             showColumnSettings={showColumnSettings}
