@@ -528,7 +528,7 @@ export function ProductionOutputSection({
             options: facetOptions(records, "materialType"),
           },
         ]}
-        minWidth={onNext ? "min-w-[1200px]" : "min-w-[1100px]"}
+        minWidth="w-full"
       />
     </ModuleCard>
   )

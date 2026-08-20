@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronDown, X } from "lucide-react"
+import { ChevronDown, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Command,
   CommandEmpty,
@@ -155,12 +156,11 @@ export function MultiSelectCombobox({
                       value={opt.value}
                       onSelect={() => toggle(opt.value)}
                     >
-                      <Check
-                        className={cn(
-                          "mr-2 size-4 shrink-0",
-                          checked ? "opacity-100" : "opacity-0",
-                        )}
-                      />
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => undefined}
+                      className="pointer-events-none mr-2"
+                    />
                       <span className="font-mono text-xs">{opt.value}</span>
                     </CommandItem>
                   )

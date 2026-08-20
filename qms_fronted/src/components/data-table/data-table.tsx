@@ -287,7 +287,19 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns.map((col) => {
+      // 多选筛选列：使用数组包含过滤（避免默认 filterFn 无法匹配 string[]）
+      const colDef = col as ColumnDef<TData, unknown> & {
+        accessorKey?: string
+        id?: string
+      }
+      const colId = String(colDef.id ?? colDef.accessorKey ?? "")
+      const isFilterColumn = filters.some((f) => f.columnId === colId)
+      if (isFilterColumn && !colDef.filterFn) {
+        return { ...col, filterFn: "arrIncludes" } as typeof col
+      }
+      return col
+    }),
     state: {
       sorting,
       columnVisibility,
@@ -309,6 +321,16 @@ export function DataTable<TData, TValue>({
     onColumnPinningChange: setColumnPinning,
     onColumnSizingChange: setColumnSizing,
     onGlobalFilterChange: setGlobalFilter,
+    filterFns: {
+      /** 多选数组包含过滤：行值命中任一选中项即保留 */
+      arrIncludes: (row, columnId, filterValue: unknown) => {
+        const selected = filterValue as string[] | undefined
+        if (!selected || selected.length === 0) return true
+        const cell = row.getValue(columnId)
+        const value = cell == null ? "" : String(cell)
+        return selected.includes(value)
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

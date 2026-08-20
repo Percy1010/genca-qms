@@ -1,8 +1,8 @@
 import { PlusCircle } from "lucide-react"
 import type { Column } from "@tanstack/react-table"
-import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Command,
   CommandEmpty,
@@ -79,7 +79,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-50 p-0" align="start">
+      <PopoverContent className="w-72 p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
@@ -102,22 +102,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                       )
                     }}
                   >
-                    <div
-                      className={cn(
-                        "flex size-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible",
-                      )}
-                    >
-                      <span className="text-background">
-                        {isSelected ? "✓" : ""}
-                      </span>
-                    </div>
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => undefined}
+                      className="pointer-events-none"
+                    />
                     {option.icon && (
-                      <option.icon className="size-4 text-muted-foreground" />
+                      <option.icon className="size-4 shrink-0 text-muted-foreground" />
                     )}
-                    <span>{option.label}</span>
+                    <span className="truncate">{option.label}</span>
                     {facets?.get(option.value) && (
                       <span className="ms-auto flex size-4 items-center justify-center font-mono text-xs">
                         {facets.get(option.value)}

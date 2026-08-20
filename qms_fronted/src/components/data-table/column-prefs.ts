@@ -86,9 +86,14 @@ export function loadTablePrefs(
 
     const sizing: Record<string, number> = {}
     if (isRecord(parsed.sizing)) {
-      for (const [id, width] of Object.entries(parsed.sizing)) {
-        if (known.has(id) && typeof width === "number" && Number.isFinite(width)) {
-          sizing[id] = width
+      const savedIds = Object.keys(parsed.sizing)
+      /* 列被删掉后丢掉旧列宽，按当前列重新铺满；显隐/冻结不影响 */
+      const structureChanged = savedIds.some((id) => !known.has(id))
+      if (!structureChanged) {
+        for (const [id, width] of Object.entries(parsed.sizing)) {
+          if (typeof width === "number" && Number.isFinite(width)) {
+            sizing[id] = width
+          }
         }
       }
     }
