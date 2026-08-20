@@ -274,7 +274,6 @@ function ReverseProductBlock({
         onNext={canView ? onViewSource : undefined}
         title="物料生产来源"
         storageKey="backward.product.source"
-        hideQty
       />
     </section>
   )
@@ -361,7 +360,6 @@ function ReverseMaterialBlock({
         onNext={canView ? onViewSource : undefined}
         title="物料生产来源"
         storageKey="backward.semi.source"
-        hideQty
       />
     </section>
   )

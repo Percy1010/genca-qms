@@ -239,7 +239,7 @@ export function ShortcutSection() {
 
                         {/* 三级菜单 */}
                         {hasChildren && isExpanded && (
-                          <div className="ml-6 mt-0.5 space-y-0.5 border-l pl-3">
+                          <div className="ml-6 mt-0.5 space-y-0.5 pl-3">
                             {item.items!.map((sub) => (
                               <label
                                 key={sub.url}

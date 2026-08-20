@@ -457,7 +457,6 @@ const outputHelper = createColumnHelper<ProductionOutputRecord>()
 
 function buildOutputColumns(
   onNext?: (row: ProductionOutputRecord) => void,
-  hideQty = false,
 ) {
   const columns = [
     col(outputHelper, "materialCode", "物料编码", "mono"),
@@ -466,7 +465,6 @@ function buildOutputColumns(
     col(outputHelper, "brand", "品牌"),
     col(outputHelper, "batchNo", "批次编号", "mono"),
     col(outputHelper, "expiryDate", "有效期至"),
-    ...(hideQty ? [] : [col(outputHelper, "qty", "生产数量", "qty")]),
     col(outputHelper, "unit", "单位"),
   ]
   if (!onNext) return toColumns<ProductionOutputRecord>(columns)
@@ -500,7 +498,6 @@ export function ProductionOutputSection({
   onNext,
   title = "物料生产去向",
   storageKey = "forward.production-output",
-  hideQty = false,
 }: {
   records: ProductionOutputRecord[]
   open?: boolean
@@ -508,9 +505,8 @@ export function ProductionOutputSection({
   onNext?: (row: ProductionOutputRecord) => void
   title?: string
   storageKey?: string
-  hideQty?: boolean
 }) {
-  const columns = buildOutputColumns(onNext, hideQty)
+  const columns = buildOutputColumns(onNext)
   return (
     <ModuleCard
       icon={<Layers className="size-4 text-muted-foreground" />}
