@@ -1,0 +1,59 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: qms-backend
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/genca_qms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: none   # 骨架期无实体；设为 none 避免启动时强连不存在的 genca_qms。有实体后按需改 validate + Flyway 管理
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      # 用于 SSO token 有效性校验（对齐 IPC：认证中心登录时写入 sso:sid_{sub}:access_token）
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DB:0}
+
+# ==================== SSO 单点登录配置 ====================
+# 认证中心（IdP）为 Genca 统一登录网关，后端不验签，改为校验 Redis 中的 token 缓存。
+# 需要与公司统一认证团队确认：Redis 连接、client_id 注册、token 缓存 key 规则。
+qms:
+  sso:
+    enabled: ${QMS_SSO_ENABLED:true}      # 开发联调可设 false 放行全部接口
+
+# ==================== 产品追溯数据源（生产库 fangxing 只读）====================
+# 由 TraceDataSourceConfig 读取。联调/上线前必须注入只读账号凭据，不写死在代码：
+#   export TRACE_DB_URL=jdbc:mysql://<host>:<port>/fangxing?...
+#   export TRACE_DB_USERNAME=<只读账号>
+#   export TRACE_DB_PASSWORD=<只读密码>
+  trace:
+    datasource:
+      url: ${TRACE_DB_URL:}
+      username: ${TRACE_DB_USERNAME:}
+      password: ${TRACE_DB_PASSWORD:}
+    verify-redis: ${QMS_SSO_VERIFY_REDIS:true}
+    redis-key-prefix: sso:sid_{sub}:access_token
+    redis-db: 0
+
+# 接口文档：启动后访问 http://localhost:8080/swagger-ui/index.html
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.genca.qms: info

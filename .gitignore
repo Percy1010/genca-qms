@@ -1,0 +1,26 @@
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# ===== 工具目录 / 本地记录 =====
+.claude/
+.workbuddy/
+产品追溯记录.xlsx
+
+# ===== 环境变量 / 敏感配置 =====
+.env
+.env.*
+*.local
+*.pem
+
+# ===== 前后端子目录有自己的 .gitignore（node_modules/.next/target 等） =====
+# 此处兜底，避免根级误提交
+node_modules/
+.next/
+out/
+target/
+build/
