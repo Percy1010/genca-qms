@@ -1,10 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { ArrowLeftToLine, ArrowRightToLine, GripVertical, Settings2 } from "lucide-react"
+import {
+  GripVertical,
+  MoreHorizontal,
+  PanelLeft,
+  PanelRight,
+  Settings2,
+  X,
+} from "lucide-react"
 import type { Column, Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Popover,
   PopoverContent,
@@ -47,7 +60,7 @@ function pinColumn<TData>(
   table.setColumnOrder([...left, ...middle, ...right])
 }
 
-/** 列显隐 + 拖拽排序 + 左右冻结 */
+/** 列显隐 + 拖拽排序 + 左固定 / 中间列 / 右固定 分区 */
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
@@ -62,6 +75,20 @@ export function DataTableViewOptions<TData>({
     const ordered = table.getState().columnOrder
     const ids = table.getAllLeafColumns().map((column) => column.id)
     return ordered.length ? ordered.filter((id) => ids.includes(id)) : ids
+  }
+
+  /** 分区内列（按当前顺序） */
+  const sectionColumns = (side: "left" | "middle" | "right") => {
+    const order = currentOrder()
+    const pinning = table.getState().columnPinning
+    if (side === "left")
+      return order.filter((id) => (pinning.left ?? []).includes(id))
+    if (side === "right")
+      return order.filter((id) => (pinning.right ?? []).includes(id))
+    return order.filter(
+      (id) =>
+        !(pinning.left ?? []).includes(id) && !(pinning.right ?? []).includes(id),
+    )
   }
 
   const moveColumn = (fromId: string, toId: string) => {
@@ -99,6 +126,163 @@ export function DataTableViewOptions<TData>({
     table.resetColumnSizing()
   }
 
+  /** 渲染一个分区（左固定/中间列/右固定） */
+  const renderSection = (
+    title: string,
+    side: "left" | "middle" | "right",
+  ) => {
+    const ids = sectionColumns(side)
+    const sectionCols = ids
+      .map((id) => table.getColumn(id))
+      .filter((c): c is Column<TData, unknown> => Boolean(c))
+    return (
+      <div className="rounded-md border">
+        <div className="border-b px-2 py-1 text-xs font-medium text-muted-foreground">
+          {title}
+          <span className="ml-1 text-muted-foreground/70">({sectionCols.length})</span>
+        </div>
+        <div className="min-h-8 p-1">
+          {sectionCols.length === 0 ? (
+            <p className="px-2 py-1.5 text-xs text-muted-foreground/60">
+              暂无列
+            </p>
+          ) : (
+            sectionCols.map((column) => {
+              const locked = isLocked(column.id)
+              const dragging = dragId === column.id
+              const dropping =
+                overId === column.id && dragId && dragId !== column.id
+              const pinned = column.getIsPinned()
+              return (
+                <div
+                  key={column.id}
+                  onDragOver={
+                    locked
+                      ? undefined
+                      : (event) => {
+                          event.preventDefault()
+                          setOverId(column.id)
+                        }
+                  }
+                  onDrop={
+                    locked
+                      ? undefined
+                      : (event) => {
+                          event.preventDefault()
+                          const fromId =
+                            dragId ?? event.dataTransfer.getData("text/plain")
+                          moveColumn(fromId, column.id)
+                          setDragId(null)
+                          setOverId(null)
+                        }
+                  }
+                  onDragLeave={() => {
+                    if (overId === column.id) setOverId(null)
+                  }}
+                  className={cn(
+                    "flex items-center gap-1 rounded-md px-1 py-0.5",
+                    dropping && "bg-primary/10",
+                    dragging && "opacity-50",
+                  )}
+                >
+                  <button
+                    type="button"
+                    draggable={!locked}
+                    disabled={locked}
+                    onDragStart={(event) => {
+                      if (locked) return
+                      setDragId(column.id)
+                      event.dataTransfer.effectAllowed = "move"
+                      event.dataTransfer.setData("text/plain", column.id)
+                    }}
+                    onDragEnd={() => {
+                      setDragId(null)
+                      setOverId(null)
+                    }}
+                    className={cn(
+                      "flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground",
+                      locked
+                        ? "cursor-not-allowed opacity-30"
+                        : "cursor-grab active:cursor-grabbing hover:bg-muted hover:text-foreground",
+                    )}
+                    aria-label={`拖动${columnTitle(column)}`}
+                  >
+                    <GripVertical className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!column.getCanHide()}
+                    onClick={() => {
+                      if (!column.getCanHide()) return
+                      column.toggleVisibility(!column.getIsVisible())
+                    }}
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left text-sm",
+                      column.getCanHide()
+                        ? "cursor-pointer"
+                        : "cursor-default opacity-80",
+                    )}
+                  >
+                    <Checkbox
+                      checked={column.getIsVisible()}
+                      disabled={!column.getCanHide()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                      onClick={(event) => event.stopPropagation()}
+                    />
+                    <span className="truncate">{columnTitle(column)}</span>
+                  </button>
+                  {/* 固定/取消固定操作 */}
+                  {side === "middle" ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          title="更多操作"
+                          aria-label={`更多操作${columnTitle(column)}`}
+                          className="flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        >
+                          <MoreHorizontal className="size-3.5" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-28">
+                        <DropdownMenuItem
+                          onClick={() => pinColumn(table, column, "left")}
+                          className="gap-2"
+                        >
+                          <PanelLeft className="size-3.5" />
+                          左侧固定
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => pinColumn(table, column, "right")}
+                          className="gap-2"
+                        >
+                          <PanelRight className="size-3.5" />
+                          右侧固定
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <button
+                      type="button"
+                      title="取消固定"
+                      aria-label={`取消固定${columnTitle(column)}`}
+                      onClick={() => pinColumn(table, column, false)}
+                      className="flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+              )
+            })
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -112,7 +296,7 @@ export function DataTableViewOptions<TData>({
           <Settings2 />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-72 gap-1.5 p-2">
+      <PopoverContent align="end" className="w-80 gap-2 p-2">
         <div className="flex items-center justify-between px-1">
           <div className="text-sm font-medium">列表设置</div>
           <button
@@ -123,125 +307,10 @@ export function DataTableViewOptions<TData>({
             恢复默认
           </button>
         </div>
-        <div className="max-h-72 overflow-y-auto">
-          {columns.map((column) => {
-            const locked = isLocked(column.id)
-            const dragging = dragId === column.id
-            const dropping = overId === column.id && dragId && dragId !== column.id
-            const pinned = column.getIsPinned()
-            return (
-              <div
-                key={column.id}
-                onDragOver={
-                  locked
-                    ? undefined
-                    : (event) => {
-                        event.preventDefault()
-                        setOverId(column.id)
-                      }
-                }
-                onDrop={
-                  locked
-                    ? undefined
-                    : (event) => {
-                        event.preventDefault()
-                        const fromId =
-                          dragId ?? event.dataTransfer.getData("text/plain")
-                        moveColumn(fromId, column.id)
-                        setDragId(null)
-                        setOverId(null)
-                      }
-                }
-                onDragLeave={() => {
-                  if (overId === column.id) setOverId(null)
-                }}
-                className={cn(
-                  "flex items-center gap-1 rounded-md px-1 py-0.5",
-                  dropping && "bg-primary/10",
-                  dragging && "opacity-50",
-                )}
-              >
-                <button
-                  type="button"
-                  draggable={!locked}
-                  disabled={locked}
-                  onDragStart={(event) => {
-                    if (locked) return
-                    setDragId(column.id)
-                    event.dataTransfer.effectAllowed = "move"
-                    event.dataTransfer.setData("text/plain", column.id)
-                  }}
-                  onDragEnd={() => {
-                    setDragId(null)
-                    setOverId(null)
-                  }}
-                  className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground",
-                    locked
-                      ? "cursor-not-allowed opacity-30"
-                      : "cursor-grab active:cursor-grabbing hover:bg-muted hover:text-foreground",
-                  )}
-                  aria-label={`拖动${columnTitle(column)}`}
-                >
-                  <GripVertical className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  disabled={!column.getCanHide()}
-                  onClick={() => {
-                    if (!column.getCanHide()) return
-                    column.toggleVisibility(!column.getIsVisible())
-                  }}
-                  className={cn(
-                    "flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left text-sm",
-                    column.getCanHide()
-                      ? "cursor-pointer"
-                      : "cursor-default opacity-80",
-                  )}
-                >
-                  <Checkbox
-                    checked={column.getIsVisible()}
-                    disabled={!column.getCanHide()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                    onClick={(event) => event.stopPropagation()}
-                  />
-                  <span className="truncate">{columnTitle(column)}</span>
-                </button>
-                <button
-                  type="button"
-                  title={pinned === "left" ? "取消左冻结" : "左侧冻结"}
-                  onClick={() =>
-                    pinColumn(table, column, pinned === "left" ? false : "left")
-                  }
-                  className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                    pinned === "left" && "bg-primary/10 text-primary",
-                  )}
-                >
-                  <ArrowLeftToLine className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  title={pinned === "right" ? "取消右冻结" : "右侧冻结"}
-                  onClick={() =>
-                    pinColumn(
-                      table,
-                      column,
-                      pinned === "right" ? false : "right",
-                    )
-                  }
-                  className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                    pinned === "right" && "bg-primary/10 text-primary",
-                  )}
-                >
-                  <ArrowRightToLine className="size-3.5" />
-                </button>
-              </div>
-            )
-          })}
+        <div className="max-h-80 space-y-2 overflow-y-auto">
+          {renderSection("左固定", "left")}
+          {renderSection("中间列", "middle")}
+          {renderSection("右固定", "right")}
         </div>
       </PopoverContent>
     </Popover>
