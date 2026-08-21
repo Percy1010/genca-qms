@@ -1,6 +1,4 @@
-# Genca QMS · 产品追溯
-
-企业级质量管理系统（QMS）—— 产品追溯 模块。
+# Genca QMS
 
 ## 仓库结构（Monorepo）
 
